@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Terminos;
+use App\Http\Resources\Termino as TerminosResource;
 
-class Terminos extends Controller
+class TerminosController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,6 +16,8 @@ class Terminos extends Controller
     public function index()
     {
         //
+        $terminos = Terminos::all();
+        return TerminosResource::collection($terminos);
     }
 
     /**
@@ -35,6 +39,19 @@ class Terminos extends Controller
     public function store(Request $request)
     {
         //
+        $terminos = $request->isMethod('put') ? Terminos::findOrFail($request->id) : new Terminos;
+        $terminos->id = $request->input('id');
+        $terminos->nombre = $request->input('nombre');
+        $terminos->descripcion = $request->input('descripcion');
+
+
+        if($terminos->save()){
+            return new TerminosResource($terminos);
+
+        }
+
+        
+
     }
 
     /**
@@ -46,6 +63,9 @@ class Terminos extends Controller
     public function show($id)
     {
         //
+        $terminos = Terminos::findOrFail($id);
+        return new TerminosResource($terminos);
+
     }
 
     /**
@@ -79,6 +99,12 @@ class Terminos extends Controller
      */
     public function destroy($id)
     {
-        //
+        $terminos= Terminos::findOrFail($id);
+
+        if($terminos->delete()){
+            return new TerminosResource($terminos);
+        }
+
+        
     }
 }

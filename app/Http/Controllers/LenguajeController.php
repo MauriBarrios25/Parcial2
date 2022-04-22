@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Lenguajes; 
+use App\Http\Resources\Lenguaje as LenguajeResource;
 
-class Lenguajes extends Controller
+
+class LenguajeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,7 +16,8 @@ class Lenguajes extends Controller
      */
     public function index()
     {
-        //
+        $lenguaje = Lenguajes::all();
+        return LenguajeResource::collection($lenguaje);
     }
 
     /**
@@ -24,6 +28,7 @@ class Lenguajes extends Controller
     public function create()
     {
         //
+       
     }
 
     /**
@@ -35,7 +40,23 @@ class Lenguajes extends Controller
     public function store(Request $request)
     {
         //
+
+        $lenguaje = $request->isMethod('put') ? Lenguajes::findOrFail($request->id) : new Lenguajes;
+        $lenguaje->id = $request->input('id');
+        $lenguaje->nombre = $request->input('nombre');
+        $lenguaje->informacion = $request->input('informacion');
+        $lenguaje->creador = $request->input('creador');
+        $lenguaje->fecha = $request->input('fecha');
+        
+        if($lenguaje->save()){
+            return new LenguajeResource($lenguaje);
+
+        }
+
+       
     }
+
+    
 
     /**
      * Display the specified resource.
@@ -46,6 +67,8 @@ class Lenguajes extends Controller
     public function show($id)
     {
         //
+        $lenguaje = Lenguajes::findOrFail($id);
+        return new LenguajeResource($lenguaje);
     }
 
     /**
@@ -80,5 +103,11 @@ class Lenguajes extends Controller
     public function destroy($id)
     {
         //
+        $lenguaje = Lenguajes::findOrFail($id);
+
+        if($lenguaje->delete()){
+            return new LenguajeResource($lenguaje);
+        }
+
     }
 }
